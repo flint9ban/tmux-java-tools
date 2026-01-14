@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
-# tmux-java-tools - Maven 快速操作菜单
+# tmux-java-tools - Maven 快速操作菜单（zsh 版）
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+emulate -L zsh
+setopt extended_glob
+
+CURRENT_DIR=${0:A:h}
 source "$CURRENT_DIR/utils.sh" 2>/dev/null || true
 
 if ! is_maven_project; then
@@ -9,8 +12,9 @@ if ! is_maven_project; then
   exit 0
 fi
 
-CHOICE=$(cat <<'EOF' | fzf --height=65% --reverse --border --prompt="Maven Tools > " \
-  --header="当前路径: #{pane_current_path}    (使用箭头/模糊搜索选择，回车执行)"
+local choice
+choice=$(cat <<'EOF' | fzf --height=65% --reverse --border --prompt="Maven Tools > " \
+  --header="当前路径: #{pane_current_path}    (箭头/模糊搜索选择，回车执行)"
 1  clean install -U -e -DskipTests          # 最常用：强制刷新 + 跳过测试
 2  dependency:resolve -U                    # 只更新依赖，不构建
 3  clean package -U -DskipTests             # 打包（跳测试）
@@ -22,9 +26,10 @@ q  退出
 EOF
 )
 
-[ -z "$CHOICE" ] && exit 0
+[[ -z $choice ]] && exit 0
 
-case "$CHOICE" in
+local cmd
+case $choice in
   1) cmd="clean install -U -e -DskipTests" ;;
   2) cmd="dependency:resolve -U" ;;
   3) cmd="clean package -U -DskipTests" ;;
@@ -45,4 +50,4 @@ tmux display-popup -w 90% -h 80% -d "#{pane_current_path}" -E \
    mvn $cmd 2>&1 | tee /tmp/tmux-java-tools-mvn.log; \
    echo ''; \
    echo -e \"\033[1;33m执行完成｜日志已保存至 /tmp/tmux-java-tools-mvn.log\033[0m\"; \
-   echo '按任意键关闭窗口...'; read -n 1"
+   echo '按任意键关闭窗口...'; read -n 1 -s -r"

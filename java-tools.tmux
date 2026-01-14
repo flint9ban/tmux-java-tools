@@ -4,7 +4,7 @@
 # 为 Java 开发者准备的 tmux 快捷工具集
 # ================================================
 
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_DIR="${0:A:h}"
 
 # 加载共用函数
 source "$CURRENT_DIR/scripts/utils.sh"
