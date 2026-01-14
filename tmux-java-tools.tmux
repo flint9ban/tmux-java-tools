@@ -19,3 +19,5 @@ tmux bind-key J run-shell "\"$CURRENT_DIR/scripts/maven-menu.zsh\""
 # 可选快捷键（根据需求自行打开）
 # tmux bind-key M-g run-shell "\"$CURRENT_DIR/scripts/gradle-menu.zsh\""
 # tmux bind-key M-j display-message "JDK 切换功能开发中..."
+
+tmux display-message "tmux-java-tools 已加载！"
