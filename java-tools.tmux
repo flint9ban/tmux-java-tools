@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 # ================================================
 # tmux-java-tools
 # 为 Java 开发者准备的 tmux 快捷工具集
