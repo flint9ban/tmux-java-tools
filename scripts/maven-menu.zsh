@@ -7,6 +7,13 @@ setopt extended_glob
 CURRENT_DIR=${0:A:h}
 source "$CURRENT_DIR/utils.zsh" 2>/dev/null || true
 
+# 始终在当前 pane 的工作目录下执行，避免在插件目录误判
+PANE_PATH=$(tmux display-message -p -F "#{pane_current_path}")
+cd -- "$PANE_PATH" 2>/dev/null || {
+    tmux display-message "无法切换到当前 pane 目录：$PANE_PATH"
+    exit 0
+}
+
 if ! is_maven_project; then
     tmux display-message "当前目录未检测到 pom.xml，不是标准 Maven 项目"
     exit 0
@@ -29,18 +36,18 @@ EOF
 [[ -z $choice ]] && exit 0
 
 local cmd
-case $choice in
+case ${choice%% *} in
     1) cmd="clean install -U -e -DskipTests" ;;
     2) cmd="dependency:resolve -U" ;;
     3) cmd="clean package -U -DskipTests" ;;
     4) cmd="clean install -U" ;;
     5) cmd="dependency:tree -Dverbose -Dincludes=*" ;;
     6) cmd="clean" ;;
-    c*)
+    c)
         cmd=$(tmux command-prompt -p "输入完整 mvn 命令（默认回车使用最常用）: " "run-shell 'echo %1'")
         cmd=${cmd:-"clean install -U -e -DskipTests"}
         ;;
-    q*|*) exit 0 ;;
+    q|*) exit 0 ;;
 esac
 
 # popup 执行并显示结果
