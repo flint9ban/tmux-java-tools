@@ -19,7 +19,6 @@ if ! is_maven_project; then
     exit 0
 fi
 
-local choice
 choice=$(cat <<'EOF' | fzf --height=65% --reverse --border --prompt="Maven Tools > " \
     --header="当前路径: #{pane_current_path}    (箭头/模糊搜索选择，回车执行)"
 1  clean install -U -e -DskipTests          # 最常用：强制刷新 + 跳过测试
@@ -35,7 +34,6 @@ EOF
 
 [[ -z $choice ]] && exit 0
 
-local cmd
 case ${choice%% *} in
     1) cmd="clean install -U -e -DskipTests" ;;
     2) cmd="dependency:resolve -U" ;;
